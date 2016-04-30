@@ -4,6 +4,7 @@
     "require": {
         "silex/silex": "~2",
         "twig/twig": "^2.0@dev",
+        "doctrine/dbal": "~2.2",
         "imanee/imanee": "^1.0@dev"
     },
     "license": "MIT",

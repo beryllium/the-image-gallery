@@ -11,3 +11,32 @@ $app['upload_folder'] = __DIR__ . '/uploads';
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__ . '/views',
 ));
+
+$app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
+    'db.options' => array(
+        'driver' => 'pdo_sqlite',
+        'path'   => __DIR__ . '/gallery.db',
+    ),
+));
+
+$schema = new \Doctrine\DBAL\Schema\Schema;
+$images = $schema->createTable('images');
+
+$images->addColumn('id', 'integer', array('autoincrement' => true));
+$images->addColumn('original_name', 'string');
+$images->addColumn('height',        'integer');
+$images->addColumn('width',         'integer');
+$images->addColumn('type',          'string');
+$images->addColumn('date_added',    'datetime');
+$images->setPrimaryKey(array('id'));
+
+$db       = $app['db'];
+$existing = $db->getSchemaManager()->createSchema();
+$compare  = new Doctrine\DBAL\Schema\Comparator;
+$diff     = $compare->compare($existing, $schema);
+
+foreach ($diff->toSaveSql($db->getDatabasePlatform()) as $query) {
+    $db->query($query);
+}
+
+return $app;

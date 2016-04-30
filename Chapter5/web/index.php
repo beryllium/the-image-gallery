@@ -12,14 +12,32 @@ $app->get('/', function() use ($app) {
 });
 
 $app->post('/', function(Request $request) use ($app) {
+    $db       = $app['db'];
     $file_bag = $request->files;
 
     if ($file_bag->has('image')) {
         $image = $file_bag->get('image');
-        $image->move(
-            $app['upload_folder'],
-            tempnam($app['upload_folder'], 'img_')
-        );
+        $info  = getimagesize($image->getPathname());
+
+        if (!$info) {
+            throw new Exception('Bad image file');
+        }
+
+        // create database entry
+        $query = "INSERT INTO images (original_name, height, width, type, date_added) VALUES (:name, :height, :width, :type, datetime('now'))";
+        $data = [
+            'name'   => $image->getClientOriginalName(),
+            'height' => $info[1],
+            'width'  => $info[0],
+            'type'   => $image->getMimeType()
+        ];
+        $result = $db->executeQuery($query, $data);
+
+        // get the image ID
+        $id = $db->lastInsertId();
+
+        // move the file to the storage location, using the ID as the filename
+        $image->move($app['upload_folder'], 'img_' . $id . '.jpg');
     }
 
     // This is just temporary.
@@ -70,20 +88,7 @@ $app->get('/img/{name}/{size}', function($name, $size, Request $request) use ($a
     }
 
     return $response;
-})->value('size', 'small')->after(function (Request $request, Response $response, \Silex\Application $app) {
-    $file = $response instanceof BinaryFileResponse ? $response->getFile() : false;
-    if (!$file) {
-        return;
-    }
-    $full_name = $file->getPathname();
-    $imanee    = file_exists($full_name) ? new \Imanee\Imanee($full_name) : false;
-    $response  = $imanee ? new Response(
-        $imanee->placeText('copyright © Karpy Wright Holder', \Imanee\Imanee::IM_POS_MID_CENTER)->output()
-    ) : $response;
-    $response->headers->set('Content-Type', 'image/jpg');
-
-    return $response;
-});
+})->value('size', 'small');
 
 $app->get('/view', function() use ($app) {
     $imageGlob = glob($app['upload_folder'] . '/img*');
