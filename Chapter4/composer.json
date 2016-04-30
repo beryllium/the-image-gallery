@@ -1,0 +1,17 @@
+{
+    "name": "beryllium/the-image-gallery",
+    "description": "The Image Gallery",
+    "require": {
+        "silex/silex": "~2",
+        "twig/twig": "^2.0@dev",
+        "imanee/imanee": "^1.0@dev"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Boyd",
+            "email": "kevin.boyd@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
