@@ -4,6 +4,7 @@ require __DIR__ . '/../bootstrap.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 // Declare our primary action
@@ -22,55 +23,21 @@ $app->post('/', function(Request $request) use ($app) {
         );
     }
 
-    // This is just temporary.
-    // Replace with a RedirectResponse to Gallery
-    return print_r($request->files, true);
+    // Redirect the user to the gallery page
+    return new RedirectResponse('/gallery', 302);
 });
 
 $app->get('/img/{name}/{size}', function($name, $size, Request $request) use ($app) {
-    $prefix    = $app['upload_folder'] . '/';
-    $full_name = $prefix . $name;
+    $thumbnailer = $app['thumbnailer'];
+    $pathToThumb = $thumbnailer->create($name, $size);
 
-    if (!file_exists($app['upload_folder'] . '/' . $name)) {
-        throw new \Exception('File not found');
+    // throw an exception if we haven't successfully created a thumbnail
+    if (empty($pathToThumb) || !file_exists($pathToThumb)) {
+        $app->abort(404, 'Image not found');
     }
 
-    $thumb_name   = '';
-    $thumb_width  = null;
-    $thumb_height = null;
-
-    switch ($size) {
-        default:
-        case 'small':
-            $thumb_name   = $prefix . 'sm_' . $name . '.jpg';
-            $thumb_width  = 320;
-            $thumb_height = 240;
-            break;
-
-        case 'medium':
-            $thumb_name   = $prefix . 'md_' . $name . '.jpg';
-            $thumb_width  = 1024;
-            $thumb_height = 768;
-            break;
-    }
-
-    $response = null;
-
-    if ('original' == $size) {
-        $response = new BinaryFileResponse($full_name);
-    } else {
-        if (!file_exists($thumb_name)) {
-            $img = new \Imanee\Imanee($full_name);
-            $img->thumbnail($thumb_width, $thumb_height, true);
-            file_put_contents($thumb_name, $img->output('jpg'));
-        }
-
-        $response = new BinaryFileResponse($thumb_name);
-        $response->headers->set('Content-Type', 'image/jpg');
-    }
-
-    return $response;
-})->value('size', 'small');
+    return new BinaryFileResponse($pathToThumb);
+})->value('size', TheImageGallery\Thumbnailer::SMALL);
 
 $app->get('/view', function() use ($app) {
     $imageGlob = glob($app['upload_folder'] . '/img*');

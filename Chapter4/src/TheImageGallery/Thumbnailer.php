@@ -13,6 +13,12 @@ class Thumbnailer
     const MEDIUM   = 'medium';
     const ORIGINAL = 'original';
 
+    public function __construct($imageLocation, $thumbnailLocation)
+    {
+        $this->imageLocation = $imageLocation;
+        $this->thumbLocation = $thumbnailLocation;
+    }
+
     public function create($name, $size)
     {
         if (!file_exists($this->imageLocation . '/' . $name)) {
