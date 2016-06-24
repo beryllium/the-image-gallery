@@ -4,8 +4,8 @@
 
 {% block body %}
     <h2>Image Gallery</h2>
-    {% for item in images %}
-        <img src="{{ app.request_stack.currentRequest.baseUrl }}/img/{{ item }}"><br>
+    {% for image in images %}
+        <img src="{{ app.request_stack.currentRequest.baseUrl }}/img/{{ image.id }}_small.jpg"><br>
     {% else %}
         <p><strong>Sorry, no images were found.</strong></p>
     {% endfor %}
