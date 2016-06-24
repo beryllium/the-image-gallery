@@ -4,8 +4,8 @@ require __DIR__ . '/../bootstrap.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
 
 // Declare our primary action
 $app->get('/', function() use ($app) {
@@ -37,9 +37,8 @@ $app->post('/', function(Request $request) use ($app) {
         );
     }
 
-    // This is just temporary.
-    // Replace with a RedirectResponse to Gallery
-    return print_r($request->files, true);
+    // Redirect the user to the gallery page
+    return new RedirectResponse('/gallery', 302);
 });
 
 $app->get('/img/{name}', function($name, Request $request) use ($app) {
@@ -47,12 +46,10 @@ $app->get('/img/{name}', function($name, Request $request) use ($app) {
         throw new \Exception('File not found');
     }
 
-    $response = new BinaryFileResponse($app['upload_folder'] . '/' . $name);
-    $response->headers->set('Content-Type', 'image/png');
-    return $response;
+    return new BinaryFileResponse($app['upload_folder'] . '/' . $name);
 });
 
-$app->get('/view', function() use ($app) {
+$app->get('/gallery/', function() use ($app) {
     $images = glob($app['upload_folder'] . '/img*');
 
     $out = '<html><body>';

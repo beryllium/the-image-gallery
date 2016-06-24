@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% block title 'Image Gallery - ' %}
+{% block title 'Gallery - ' %}
 
 {% block body %}
     <h2>Image Gallery</h2>
@@ -9,7 +9,6 @@
     {% else %}
         <p><strong>Sorry, no images were found.</strong></p>
     {% endfor %}
-
     <br><br>
     <a href="{{ app.request_stack.currentRequest.baseUrl }}/">Upload some images &raquo;</a>
 {% endblock %}
