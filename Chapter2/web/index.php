@@ -7,18 +7,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-// Declare our primary action
-$app->get('/', function() use ($app) {
+// our upload form action
+$app->get('/upload/', function() use ($app) {
     $upload_form = <<<EOF
     <html>
     <body>
     <form enctype="multipart/form-data" action="" method="POST">
         <input type="hidden" name="MAX_FILE_SIZE" value="52428800" />
-        Upload this file:
+        Choose a Photo:
     <br><br>
     <input name="image" type="file" />
     <br><br>
-        <input type="submit" value="Send File" />
+        <input type="submit" value="Upload Photo" />
     </form>
     </body>
     </html>
@@ -26,11 +26,12 @@ EOF;
     return $upload_form;
 });
 
-$app->post('/', function(Request $request) use ($app) {
-    $file_bag = $request->files;
+// our action for receiving uploads
+$app->post('/upload/', function(Request $request) use ($app) {
+    $files = $request->files;
 
-    if ($file_bag->has('image')) {
-        $image = $file_bag->get('image');
+    if ($files->has('image')) {
+        $image = $files->get('image');
         $image->move(
             $app['upload_folder'],
             tempnam($app['upload_folder'], 'img_')
@@ -38,9 +39,10 @@ $app->post('/', function(Request $request) use ($app) {
     }
 
     // Redirect the user to the gallery page
-    return new RedirectResponse('/gallery', 302);
+    return new RedirectResponse('/', 302);
 });
 
+// our image viewer action
 $app->get('/img/{name}', function($name, Request $request) use ($app) {
     if (!file_exists($app['upload_folder'] . '/' . $name)) {
         throw new \Exception('File not found');
@@ -49,7 +51,8 @@ $app->get('/img/{name}', function($name, Request $request) use ($app) {
     return new BinaryFileResponse($app['upload_folder'] . '/' . $name);
 });
 
-$app->get('/gallery/', function() use ($app) {
+// our gallery action
+$app->get('/', function() use ($app) {
     $images = glob($app['upload_folder'] . '/img*');
 
     $out = '<html><body>';
@@ -58,6 +61,7 @@ $app->get('/gallery/', function() use ($app) {
         $out .= '<img src="/img/' . basename($img) . '"><br><br>';
     }
 
+    $out .= '<a href="/upload/">Upload Photos &raquo;</a>';
     $out .= '</body></html>';
 
     return $out;

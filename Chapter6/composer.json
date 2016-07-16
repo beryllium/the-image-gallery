@@ -1,0 +1,85 @@
+{
+  "name": "beryllium/the-image-gallery",
+  "description": "The Image Gallery",
+  "require": {
+    "silex/silex": "~2",
+    "twig/twig": "^2.0@dev",
+    "doctrine/dbal": "~2.2",
+    "imanee/imanee": "^1.0@dev",
+    "materialize/materialize": "~0.97.0",
+    "flickr/justified-layout": "~1.1.0",
+    "robloach/component-installer": "^0.2.3",
+    "components/jquery": "*"
+  },
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "materialize/materialize",
+        "type": "component",
+        "version": "0.97.6",
+        "dist": {
+          "url": "https://github.com/Dogfalo/materialize/archive/v0.97.6.zip",
+          "type": "zip"
+        },
+        "extra": {
+          "component": {
+            "scripts": [
+              "dist/js/materialize.js"
+            ],
+            "files": [
+              "dist/css/*",
+              "dist/font/material-design-icons/*",
+              "dist/font/roboto/*",
+              "dist/fonts/roboto/*",
+              "dist/js/*"
+            ]
+          }
+        },
+        "require": {
+          "robloach/component-installer": "*"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "flickr/justified-layout",
+        "type": "component",
+        "version": "1.1.0",
+        "dist": {
+          "url": "https://github.com/flickr/justified-layout/archive/v1.1.0.zip",
+          "type": "zip"
+        },
+        "extra": {
+          "component": {
+            "scripts": [
+              "dist/justified-layout.js"
+            ],
+            "files": [
+              "dist/*"
+            ]
+          }
+        },
+        "require": {
+          "robloach/component-installer": "*"
+        }
+      }
+    }
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kevin Boyd",
+      "email": "kevin.boyd@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {"": "src/"}
+  },
+  "config": {
+    "component-dir": "web/components",
+    "component-baseurl": "/components"
+  }
+}

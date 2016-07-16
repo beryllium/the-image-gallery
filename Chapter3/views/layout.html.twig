@@ -1,5 +1,9 @@
+{% set baseUrl = app.request_stack.currentRequest.baseUrl %}
 <html>
-<head><title>{% block sub_title '' %}{% block title 'The Image Gallery' %}</title></head>
+<head><title>
+    {% block sub_title '' %}
+    {% block title 'The Image Gallery' %}
+</title></head>
 <body>
   <h1>The Image Gallery</h1>
   {% block body %}

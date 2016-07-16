@@ -19,11 +19,7 @@ class ThumbnailerServiceProvider implements ServiceProviderInterface
             ? $app[$thumbsSetting]
             : null;
 
-        $app['thumbnailer'] = function () use (
-            $app,
-            $imagesSetting,
-            $thumbsSetting
-        ) {
+        $app['thumbnailer'] = function () use ($app, $imagesSetting, $thumbsSetting) {
             return new Thumbnailer($app[$imagesSetting], $app[$thumbsSetting]);
         };
     }

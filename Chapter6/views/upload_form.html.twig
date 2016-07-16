@@ -1,0 +1,48 @@
+{% extends 'layout.html.twig' %}
+
+{% block sub_title 'Upload an Image - ' %}
+
+{% block body %}
+    <div class="row center">
+        <h5 class="header col s12 light">Upload an Image</h5>
+    </div>
+
+    <div class="container">
+        <div class="section">
+
+            <!--   Icon Section   -->
+            <div class="row">
+                <div class="col s12 m6 offset-m3">
+                    <div class="icon-block">
+                        <h2 class="center light-blue-text"><i class="material-icons large">photo_camera</i></h2>
+                        <h5 class="center">Upload Form</h5>
+
+                        <p class="light">We did most of the heavy lifting for you to provide a default stylings that incorporate our custom components. Additionally, we refined animations and transitions to provide a smoother experience for developers.</p>
+
+                        <form enctype="multipart/form-data" action="" method="POST">
+                            <input type="hidden" name="MAX_FILE_SIZE" value="52428800" />
+                            <br>
+                            <div class="file-field input-field">
+                                <div class="btn">
+                                    <span>File</span>
+                                    <input type="file" name="image">
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                            <br><br>
+                            <button class="btn waves-effect waves-light" type="submit" name="action">Upload File
+                                <i class="material-icons right">cloud_upload</i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+{% endblock body %}

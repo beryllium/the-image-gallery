@@ -7,16 +7,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-// Declare our primary action
-$app->get('/', function() use ($app) {
+// our upload form action
+$app->get('/upload/', function() use ($app) {
     return $app['twig']->render('upload_form.html.twig');
 });
 
-$app->post('/', function(Request $request) use ($app) {
-    $file_bag = $request->files;
+// our action for receiving uploads
+$app->post('/upload/', function(Request $request) use ($app) {
+    $files = $request->files;
 
-    if ($file_bag->has('image')) {
-        $image = $file_bag->get('image');
+    if ($files->has('image')) {
+        $image = $files->get('image');
         $image->move(
             $app['upload_folder'],
             tempnam($app['upload_folder'], 'img_')
@@ -24,20 +25,20 @@ $app->post('/', function(Request $request) use ($app) {
     }
 
     // Redirect the user to the gallery page
-    return new RedirectResponse('/gallery', 302);
+    return new RedirectResponse('/', 302);
 });
 
+// our image viewer action
 $app->get('/img/{name}', function($name, Request $request) use ($app) {
     if (!file_exists($app['upload_folder'] . '/' . $name)) {
         throw new \Exception('File not found');
     }
 
-    $response = new BinaryFileResponse($app['upload_folder'] . '/' . $name);
-    $response->headers->set('Content-Type', 'image/png');
-    return $response;
+    return new BinaryFileResponse($app['upload_folder'] . '/' . $name);
 });
 
-$app->get('/gallery/', function() use ($app) {
+// our gallery action
+$app->get('/', function() use ($app) {
     $imageGlob = glob($app['upload_folder'] . '/img*');
     $images    = array_map(
         function($val) { return basename($val); },

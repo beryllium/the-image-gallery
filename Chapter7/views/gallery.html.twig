@@ -1,0 +1,17 @@
+{% extends 'layout.html.twig' %}
+
+{% block title 'Image Gallery - ' %}
+
+{% block body %}
+    <div class="gallery" id="gallery" data-images="{{ images|json_encode() }}"></div>
+{% endblock %}
+
+{#
+
+    - Build data structure for computing justified layout
+    - Compute the layout
+    - Render the boxes
+    - Load the images inside the boxes
+    - Make the images clickable/materialboxed?
+
+#}

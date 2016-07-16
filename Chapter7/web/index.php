@@ -1,5 +1,10 @@
 <?php
 
+$filename = __DIR__.preg_replace('#(\?.*)$#', '', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
+if (php_sapi_name() === 'cli-server' && is_file($filename)) {
+    return false;
+}
+
 require __DIR__ . '/../bootstrap.php';
 
 use Symfony\Component\HttpFoundation\Request;
@@ -8,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 // our upload form action
-$app->get('/upload/', function() use ($app) {
+$app->get('/upload/', function (Request $request) use ($app) {
     return $app['twig']->render('upload_form.html.twig');
 });
 
@@ -27,7 +32,7 @@ $app->post('/upload/', function(Request $request) use ($app) {
         throw new RuntimeException($image->getErrorMessage());
     }
 
-    $info  = getimagesize($image->getPathname());
+    $info = getimagesize($image->getPathname());
 
     if (!$info) {
         throw new Exception('Bad image file');
@@ -80,14 +85,18 @@ $app->get('/img/{id}_{size}.jpg', function($id, $size) use ($app) {
 })->value('size', TheImageGallery\Thumbnailer::SMALL);
 
 // our gallery action
-$app->get('/', function() use ($app) {
+$app->get('/', function(Request $request) use ($app) {
     $result = $app['db']->executeQuery(
         'SELECT * FROM images ORDER BY date_added DESC LIMIT 10'
     );
 
     return $app['twig']->render('gallery.html.twig', array(
-        'images' => $result->fetchAll(PDO::FETCH_ASSOC),
+        'images' => $result->fetchAll(),
     ));
 });
+
+if ($app['env'] === 'test') {
+    return $app;
+}
 
 $app->run();

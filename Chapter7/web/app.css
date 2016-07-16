@@ -1,0 +1,13 @@
+div.gallery {
+    position: relative;
+    width: 100%;
+}
+
+div.gallery div.item {
+    position: absolute;
+}
+
+div.item img {
+    width: 100%;
+    height: 100%;
+}
