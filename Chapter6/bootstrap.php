@@ -4,8 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 $app = new Silex\Application();
 
-// Disable this setting in production
-$app['debug'] = true;
+$app['debug']         = true;
 $app['upload_folder'] = __DIR__ . '/uploads';
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
@@ -17,14 +16,14 @@ $app->register(new TheImageGallery\ThumbnailerServiceProvider(), array(
     'thumbs.path.thumbs' => $app['upload_folder']
 ));
 
-$app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => array(
         'driver' => 'pdo_sqlite',
         'path'   => __DIR__ . '/gallery.db',
     ),
 ));
 
-$schema = new \Doctrine\DBAL\Schema\Schema;
+$schema = new Doctrine\DBAL\Schema\Schema;
 $images = $schema->createTable('images');
 
 $images->addColumn('id', 'integer', array('autoincrement' => true));

@@ -2,25 +2,29 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-$app        = new Silex\Application();
-$app['env'] = isset($app_env) ? $app_env : 'dev';
-
-// Disable this setting in production
-$app['debug'] = true;
+$app                  = new Silex\Application();
+$app['env']           = isset($app_env) ? $app_env : 'dev';
+$app['debug']         = true;
 $app['upload_folder'] = '/uploads';
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__ . '/views',
 ));
 
-$app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
+$app->register(new TheImageGallery\ThumbnailerServiceProvider(), array(
+    'thumbs.path.images' => $app['upload_folder'],
+    'thumbs.path.thumbs' => $app['upload_folder']
+));
+
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => array(
         'driver' => 'pdo_sqlite',
-        'path'   => __DIR__ . ($app['env'] === 'test' ? '/gallery_test.db' : '/gallery.db'),
+        'path'   => __DIR__
+            . ($app['env'] === 'test' ? '/gallery_test.db' : '/gallery.db'),
     ),
 ));
 
-$schema = new \Doctrine\DBAL\Schema\Schema;
+$schema = new Doctrine\DBAL\Schema\Schema;
 $images = $schema->createTable('images');
 
 $images->addColumn('id', 'integer', array('autoincrement' => true));

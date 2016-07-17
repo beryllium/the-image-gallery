@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 // our upload form action
-$app->get('/upload/', function (Request $request) use ($app) {
+$app->get('/upload/', function () use ($app) {
     return $app['twig']->render('upload_form.html.twig');
 });
 
@@ -32,7 +32,7 @@ $app->post('/upload/', function(Request $request) use ($app) {
         throw new RuntimeException($image->getErrorMessage());
     }
 
-    $info = getimagesize($image->getPathname());
+    $info  = getimagesize($image->getPathname());
 
     if (!$info) {
         throw new Exception('Bad image file');
@@ -85,13 +85,13 @@ $app->get('/img/{id}_{size}.jpg', function($id, $size) use ($app) {
 })->value('size', TheImageGallery\Thumbnailer::SMALL);
 
 // our gallery action
-$app->get('/', function(Request $request) use ($app) {
+$app->get('/', function() use ($app) {
     $result = $app['db']->executeQuery(
         'SELECT * FROM images ORDER BY date_added DESC LIMIT 10'
     );
 
     return $app['twig']->render('gallery.html.twig', array(
-        'images' => $result->fetchAll(),
+        'images' => $result->fetchAll(PDO::FETCH_ASSOC),
     ));
 });
 

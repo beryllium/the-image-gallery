@@ -21,7 +21,7 @@ imageGallery    = {
         
         container.empty();
         for (var i = 0; i < layoutGeometry.boxes.length; i++) {
-            var box  = box,
+            var box  = layoutGeometry.boxes[i],
                 item = $('<div class="item">'
                     + '<img class="materialboxed" src="/img/'
                     + imageData[i].id + '_medium.jpg">'

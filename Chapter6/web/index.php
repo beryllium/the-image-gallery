@@ -32,7 +32,7 @@ $app->post('/upload/', function(Request $request) use ($app) {
         throw new RuntimeException($image->getErrorMessage());
     }
 
-    $info = getimagesize($image->getPathname());
+    $info  = getimagesize($image->getPathname());
 
     if (!$info) {
         throw new Exception('Bad image file');
@@ -91,7 +91,7 @@ $app->get('/', function() use ($app) {
     );
 
     return $app['twig']->render('gallery.html.twig', array(
-        'images' => $result->fetchAll(),
+        'images' => $result->fetchAll(PDO::FETCH_ASSOC),
     ));
 });
 
