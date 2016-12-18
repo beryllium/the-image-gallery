@@ -31,7 +31,8 @@ $app->post('/upload/', function(Request $request) use ($app) {
 // our image viewer action
 $app->get('/img/{name}', function($name, Request $request) use ($app) {
     $path = realpath($app['upload_folder'] . '/' . $name);
-    if (!$path) {
+
+    if (!$path || strpos($path, $app['upload_folder']) !== 0) {
         throw new \Exception('File not found');
     }
 
