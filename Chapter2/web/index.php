@@ -44,11 +44,12 @@ $app->post('/upload/', function(Request $request) use ($app) {
 
 // our image viewer action
 $app->get('/img/{name}', function($name, Request $request) use ($app) {
-    if (!file_exists($app['upload_folder'] . '/' . $name)) {
+    $path = realpath($app['upload_folder'] . '/' . $name);
+    if (!$path) {
         throw new \Exception('File not found');
     }
 
-    return new BinaryFileResponse($app['upload_folder'] . '/' . $name);
+    return new BinaryFileResponse($path);
 });
 
 // our gallery action
