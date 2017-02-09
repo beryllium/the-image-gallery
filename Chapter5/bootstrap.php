@@ -26,7 +26,12 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 $schema = new Doctrine\DBAL\Schema\Schema;
 $images = $schema->createTable('images');
 
-$images->addColumn('id', 'integer', array('autoincrement' => true));
+$images->addColumn(
+    'id',
+    'integer',
+    array('autoincrement' => true)
+);
+
 $images->addColumn('original_name', 'string');
 $images->addColumn('height',        'integer');
 $images->addColumn('width',         'integer');
@@ -38,8 +43,9 @@ $db       = $app['db'];
 $existing = $db->getSchemaManager()->createSchema();
 $compare  = new Doctrine\DBAL\Schema\Comparator;
 $diff     = $compare->compare($existing, $schema);
+$queries  = $diff->toSaveSql($db->getDatabasePlatform());
 
-foreach ($diff->toSaveSql($db->getDatabasePlatform()) as $query) {
+foreach ($queries as $query) {
     $db->query($query);
 }
 

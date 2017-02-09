@@ -29,7 +29,9 @@ $app->post('/upload/', function(Request $request) use ($app) {
 });
 
 // our image viewer action
-$app->get('/img/{name}/{size}', function($name, $size, Request $request) use ($app) {
+$app->get(
+    '/img/{name}/{size}',
+    function($name, $size, Request $request) use ($app) {
     $thumbnailer = $app['thumbnailer'];
     $pathToThumb = $thumbnailer->create($name, $size);
 

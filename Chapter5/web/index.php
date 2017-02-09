@@ -18,26 +18,34 @@ $app->post('/upload/', function(Request $request) use ($app) {
     $files = $request->files;
 
     if (!$files->has('image')) {
-        throw new Exception('Image upload failed. Check maximum filesize limits.');
+        throw new Exception(
+            'Image upload failed. Check maximum filesize limits.'
+        );
     }
 
+    // retrieve the image object and check for various errors
+    // such as:
+    // - file size limit exceeded
+    // - file could not be written on disk
+    // - file was only partially uploaded
     $image = $files->get('image');
-
     if ($image->getError()) {
         throw new RuntimeException($image->getErrorMessage());
     }
 
-    $info  = getimagesize($image->getPathname());
-
+    // retrieve image info (such as dimensions)
+    // getimagesize() returns false if the image is invalid
+    $info = getimagesize($image->getPathname());
     if (!$info) {
         throw new Exception('Bad image file');
     }
 
-    // add the uploaded image to the images table, preserving the original
-    // name and educated guess at the MIME type
+    // add the uploaded image to the images table, preserving
+    // the original name and educated guess at the MIME type
     $db->executeQuery(
-        "INSERT INTO images (original_name, height, width, type, date_added) "
-        . "VALUES (:name, :height, :width, :type, datetime('now'))",
+        "INSERT INTO
+        images (original_name, height, width, type, date_added) 
+        VALUES (:name, :height, :width, :type, datetime('now'))",
         [
             'name'   => $image->getClientOriginalName(),
             'height' => $info[1],
@@ -57,26 +65,28 @@ $app->post('/upload/', function(Request $request) use ($app) {
 });
 
 // our image viewer action
-$app->get('/img/{id}_{size}.jpg', function($id, $size) use ($app) {
-    $thumbnailer = $app['thumbnailer'];
+$app->get(
+    '/img/{id}_{size}.jpg',
+    function($id, $size) use ($app) {
+        $thumbnailer = $app['thumbnailer'];
 
-    // Fetch the image ID from the database
-    $result = $app['db']->executeQuery(
-        'SELECT id FROM images WHERE images.id = :image',
-        array('image' => $id)
-    );
-    $image  = $result->fetch(PDO::FETCH_ASSOC);
+        // Fetch the image ID from the database
+        $result = $app['db']->executeQuery(
+            'SELECT id FROM images WHERE images.id = :image',
+            array('image' => $id)
+        );
+        $image  = $result->fetch(PDO::FETCH_ASSOC);
 
-    // Abort the request if the image was not found in the database
-    if (!$image) {
-        return $app->abort(404);
-    }
+        // Abort the request if the image was not found in the database
+        if (!$image) {
+            return $app->abort(404);
+        }
 
-    return new BinaryFileResponse(
-        $thumbnailer->createFromId($image['id'], $size),
-        200,
-        array('Content-Type' => 'image/jpeg')
-    );
+        return new BinaryFileResponse(
+            $thumbnailer->createFromId($image['id'], $size),
+            200,
+            array('Content-Type' => 'image/jpeg')
+        );
 })->value('size', TheImageGallery\Thumbnailer::SMALL);
 
 // our gallery action

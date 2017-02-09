@@ -24,7 +24,10 @@ class ThumbnailerServiceProvider implements ServiceProviderInterface
             $imagesSetting,
             $thumbsSetting
         ) {
-            return new Thumbnailer($app[$imagesSetting], $app[$thumbsSetting]);
+            return new Thumbnailer(
+                $app[$imagesSetting],
+                $app[$thumbsSetting]
+            );
         };
     }
 }
