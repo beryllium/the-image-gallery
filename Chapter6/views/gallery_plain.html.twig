@@ -1,0 +1,17 @@
+{% extends 'layout.html.twig' %}
+
+{% block title 'Image Gallery - ' %}
+
+{% block body %}
+    <div class="row center">
+        <h5 class="header col s12 light">Image Gallery</h5>
+    </div>
+    {% for image in images %}
+        <img class="materialboxed responsive-img" src="{{ app.request_stack.currentRequest.baseUrl }}/img/{{ image.id }}_medium.jpg">
+    {% else %}
+        <p><strong>Sorry, no images were found.</strong></p>
+    {% endfor %}
+
+    <br><br>
+    <a href="#modal1" class="modal-trigger">Upload some images &raquo;</a>
+{% endblock %}
